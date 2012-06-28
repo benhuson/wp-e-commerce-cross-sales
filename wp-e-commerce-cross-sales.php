@@ -84,19 +84,20 @@ class WPEC_CrossSales {
 	}
 	
 	/**
-	 * Save cross sale information at checkout.
+	 * Save cross sale information on checkout submit
 	 * Originally called 'wpsc_alsobought_submit_checkout' and located in wpsc-includes/ajax.functions.php
+	 *
+	 * @param array $args Array of 'purchase_log_id' and 'our_user_id'
 	 */
 	function wpsc_submit_checkout( $args ) {
-		
-		global $wpsc_cart;
-		
 		// Only do this if wpsc_populate_also_bought_list function does not exist
 		// Originally defined in wpsc-includes/misc.functions.php
-		if ( !function_exists( 'wpsc_populate_also_bought_list' ) ) {
+		if ( ! function_exists( 'wpsc_populate_also_bought_list' ) || wpsc_populate_also_bought_list() === false ) {
 			if ( get_option( 'wpsc_also_bought' ) == 1 ) {
-				$cart_cross_sale_data = $this->get_cart_cross_sale_data( $wpsc_cart );
-				$this->populate_also_bought_list( $cart_cross_sale_data );
+				$log = new WPSC_Purchase_Log( $args['purchase_log_id'] );
+				$cart_contents = $log->get_cart_contents();
+				$also_bought_data = $this->get_cart_cross_sale_data( $cart_contents );
+				$this->populate_also_bought_list( $also_bought_data );
 			}
 		}
 		
@@ -108,7 +109,6 @@ class WPEC_CrossSales {
 	 * Originally defined in wpsc-includes/misc.functions.php
 	 */
 	function populate_also_bought_list( $new_also_bought_data ) {
-		
 		global $wpdb;
 		
 		$insert_statement_parts = array();
@@ -117,12 +117,14 @@ class WPEC_CrossSales {
 			$also_bought_data = $wpdb->get_results( "SELECT `id`, `associated_product`, `quantity` FROM `" . $this->db_table . "` WHERE `selected_product` IN('$new_also_bought_id') AND `associated_product` IN('" . implode( "','", $new_other_ids ) . "')", ARRAY_A );
 			$altered_new_also_bought_row = $new_also_bought_row;
 			
+			// Update existing data
 			foreach ( (array)$also_bought_data as $also_bought_row ) {
 				$quantity = $new_also_bought_row[$also_bought_row['associated_product']] + $also_bought_row['quantity'];
 				unset( $altered_new_also_bought_row[$also_bought_row['associated_product']] );
 				$wpdb->query( "UPDATE `" . $this->db_table . "` SET `quantity` = {$quantity} WHERE `id` = '{$also_bought_row['id']}' LIMIT 1;" );
 			}
 			
+			// Collect new data
 			if ( count( $altered_new_also_bought_row ) > 0 ) {
 				foreach ( $altered_new_also_bought_row as $associated_product => $quantity ) {
 					$insert_statement_parts[] = '(' . absint( $new_also_bought_id ) . ',' . absint( $associated_product ) . ',' . absint( $quantity ) . ')';
@@ -130,6 +132,7 @@ class WPEC_CrossSales {
 			}
 		}
 		
+		// Bulk insert all new data
 		if ( count( $insert_statement_parts ) > 0 ) {
 			$insert_statement = "INSERT INTO `" . $this->db_table . "` (`selected_product`, `associated_product`, `quantity`) VALUES " . implode( ",\n ", $insert_statement_parts );
 			$wpdb->query( $insert_statement );
@@ -140,23 +143,21 @@ class WPEC_CrossSales {
 	 * Get Cart Cross Sale Data.
 	 * Returns a multi-dimensional array of product IDs, cross sale products
 	 * and their quantities for this cart.
+	 *
+	 * @param array $cart_contents Array of cart items.
+	 * @return array Multi-dimensional array of product IDs.
 	 */
-	function get_cart_cross_sale_data( $wpsc_cart ) {
-		
+	function get_cart_cross_sale_data( $cart_contents ) {
 		$cross_sale_data = array( );
-		foreach ( $wpsc_cart->cart_items as $outer_cart_item ) {
-			$cross_sale_data[$outer_cart_item->product_id] = array();
-			foreach ( $wpsc_cart->cart_items as $inner_cart_item ) {
-				if ( $outer_cart_item->product_id != $inner_cart_item->product_id ) {
-					$cross_sale_data[$outer_cart_item->product_id][$inner_cart_item->product_id] = $inner_cart_item->quantity;
-				} else {
-					continue;
+		foreach ( $cart_contents as $outer_cart_item ) {
+			$cross_sale_data[$outer_cart_item->prodid] = array();
+			foreach ( $cart_contents as $inner_cart_item ) {
+				if ( $outer_cart_item->prodid != $inner_cart_item->prodid ) {
+					$cross_sale_data[$outer_cart_item->prodid][$inner_cart_item->prodid] = $inner_cart_item->quantity;
 				}
 			}
 		}
-		
 		return $cross_sale_data;
-		
 	}
 	
 	/**
@@ -209,9 +210,10 @@ class WPEC_CrossSales {
 }
 
 // Start WPEC
+global $wpec_cross_sales;
 $wpec_cross_sales = new WPEC_CrossSales();
 
-function wpsc_cross_sales( $product_id ) {
+function wpsc_cross_sales( $product_id = 0 ) {
 	global $wpec_cross_sales;
 	return $wpec_cross_sales->cross_sales( $product_id );
 }
