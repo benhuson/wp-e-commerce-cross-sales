@@ -13,7 +13,7 @@ $also_bought_variations = $wpdb->get_col( "SELECT `" . $wpdb->posts . "`.ID FROM
 $also_bought_variations[] = wpsc_cross_sales_product_id();
 
 // Get also bought products and variations
-$also_bought_vars = $wpdb->get_results( "SELECT `" . $wpdb->posts . "`.ID, `" . $wpdb->posts . "`.post_parent, `" . $wpdb->posts . "`.post_status, `" . $wpec_cross_sales->db_table . "`.`quantity` FROM `" . $wpec_cross_sales->db_table . "`, `" . $wpdb->posts . "` WHERE `selected_product` IN ('" . implode( "','", $also_bought_variations ) . "') AND (`" . $wpec_cross_sales->db_table . "`.`associated_product` = `" . $wpdb->posts . "`.`id`) AND `" . $wpdb->posts . "`.`post_status` IN('publish','protected','inherit') ORDER BY `" . $wpec_cross_sales->db_table . "`.`quantity` DESC LIMIT $also_bought_limit" );
+$also_bought_vars = $wpdb->get_results( "SELECT `" . $wpdb->posts . "`.ID, `" . $wpdb->posts . "`.post_parent, `" . $wpdb->posts . "`.post_status, `" . $wpec_cross_sales->get_db_table() . "`.`quantity` FROM `" . $wpec_cross_sales->get_db_table() . "`, `" . $wpdb->posts . "` WHERE `selected_product` IN ('" . implode( "','", $also_bought_variations ) . "') AND (`" . $wpec_cross_sales->get_db_table() . "`.`associated_product` = `" . $wpdb->posts . "`.`id`) AND `" . $wpdb->posts . "`.`post_status` IN('publish','protected','inherit') ORDER BY `" . $wpec_cross_sales->get_db_table() . "`.`quantity` DESC LIMIT $also_bought_limit" );
 $also_bought_products = array();
 foreach ( $also_bought_vars as $also_bought_var ) {
 	if ( $also_bought_var->post_parent > 0 ) {

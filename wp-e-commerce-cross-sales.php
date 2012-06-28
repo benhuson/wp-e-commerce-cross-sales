@@ -2,7 +2,7 @@
 
 /*
 Plugin Name: WP e-Commerce Cross Sales (Also Bought)
-Description: Adds 'also bought' cross-sale functionality to WP e-Commerce 3.8.1+ (which must be installed and active for this plugin to do anything). This is the same functionality that existed as standard in previous versions of WP e-Commerce.
+Description: This plugin will add 'also bought' cross-sale functionality to WP e-Commerce 3.9+ (which must be installed and active for this plugin to do anything). This is the same functionality that existed as standard in previous versions of WP e-Commerce.
 Author: Ben Huson
 Version: 0.1
 */
@@ -24,10 +24,7 @@ class WPEC_CrossSales {
 	 * Cross Sales class constructor.
 	 */
 	function WPEC_CrossSales() {
-		
 		global $wpdb;
-		
-		$this->db_table = $wpdb->prefix . $this->db_table;
 		
 		// Language
 		load_plugin_textdomain( 'wpsc-cross-sales', false, dirname( $this->plugin_file ) . '/languages' );
@@ -47,6 +44,16 @@ class WPEC_CrossSales {
 		// Activation
 		register_activation_hook( $this->plugin_file, array( $this, 'register_activation_hook' ) );
 		
+	}
+	
+	/**
+	 * Get DB Table
+	 *
+	 * @return string Database table reference.
+	 */
+	function get_db_table() {
+		global $wpdb;
+		return $wpdb->prefix . $this->db_table;
 	}
 	
 	/**
@@ -114,14 +121,14 @@ class WPEC_CrossSales {
 		$insert_statement_parts = array();
 		foreach ( $new_also_bought_data as $new_also_bought_id => $new_also_bought_row ) {
 			$new_other_ids = array_keys( $new_also_bought_row );
-			$also_bought_data = $wpdb->get_results( "SELECT `id`, `associated_product`, `quantity` FROM `" . $this->db_table . "` WHERE `selected_product` IN('$new_also_bought_id') AND `associated_product` IN('" . implode( "','", $new_other_ids ) . "')", ARRAY_A );
+			$also_bought_data = $wpdb->get_results( "SELECT `id`, `associated_product`, `quantity` FROM `" . $this->get_db_table() . "` WHERE `selected_product` IN('$new_also_bought_id') AND `associated_product` IN('" . implode( "','", $new_other_ids ) . "')", ARRAY_A );
 			$altered_new_also_bought_row = $new_also_bought_row;
 			
 			// Update existing data
 			foreach ( (array)$also_bought_data as $also_bought_row ) {
 				$quantity = $new_also_bought_row[$also_bought_row['associated_product']] + $also_bought_row['quantity'];
 				unset( $altered_new_also_bought_row[$also_bought_row['associated_product']] );
-				$wpdb->query( "UPDATE `" . $this->db_table . "` SET `quantity` = {$quantity} WHERE `id` = '{$also_bought_row['id']}' LIMIT 1;" );
+				$wpdb->query( "UPDATE `" . $this->get_db_table() . "` SET `quantity` = {$quantity} WHERE `id` = '{$also_bought_row['id']}' LIMIT 1;" );
 			}
 			
 			// Collect new data
@@ -134,7 +141,7 @@ class WPEC_CrossSales {
 		
 		// Bulk insert all new data
 		if ( count( $insert_statement_parts ) > 0 ) {
-			$insert_statement = "INSERT INTO `" . $this->db_table . "` (`selected_product`, `associated_product`, `quantity`) VALUES " . implode( ",\n ", $insert_statement_parts );
+			$insert_statement = "INSERT INTO `" . $this->get_db_table() . "` (`selected_product`, `associated_product`, `quantity`) VALUES " . implode( ",\n ", $insert_statement_parts );
 			$wpdb->query( $insert_statement );
 		}
 	}
