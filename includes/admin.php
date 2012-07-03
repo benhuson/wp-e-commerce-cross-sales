@@ -103,23 +103,24 @@ class WPEC_CrossSales_Admin {
 	 * Show admin notice if WP e-Commerce is not installed or needs upgrading
 	 */
 	function admin_notices() {
-		global $wpec_cross_sales;
+		global $wpec_cross_sales, $pagenow;
 		
-		// Vars
-		$plugin       = '<strong>' . __( 'Cross Sales', 'wpsc-cross-sales' ) . '</strong>';
-		$wpec_version = __( 'WP e-Commerce', 'wpsc-cross-sales' ) . ' ' . $wpec_cross_sales->required_wpsc_version . '+';
-		$wpec_link    = ' <a href="http://wordpress.org/extend/plugins/wp-e-commerce/" target="_blank">' . __( 'WP e-Commerce', 'wpsc-cross-sales' ) . '</a>';
-		
-		$deactivate_plugin_file = plugin_basename( $wpec_cross_sales->plugin_file );
-		$deactivate_url = wp_nonce_url( admin_url( 'plugins.php?action=deactivate&amp;s&amp;plugin_status=all&amp;plugin=' . $deactivate_plugin_file ), 'deactivate-plugin_' . $deactivate_plugin_file );
-		$deactivate = '<a href="' . $deactivate_url . '">' . __( 'deactivate' ) . '</a>';
-		
-		if ( !$wpec_cross_sales->wpec_is_installed() ) {
-			$msg = __( "The %s plugin requires %s. Please %s the plugin or install %s." , 'wpsc-cross-sales' );
-			echo '<div id="message" class="updated"><p>' . sprintf( $msg, $plugin, $wpec_version, $deactivate, $wpec_link ) . '</p></div>';
-		} elseif ( !$wpec_cross_sales->wpec_is_compatible() ) {
-			$msg = __( "The %s plugin is only compatible with %s. Please %s the plugin or upgrade %s.", 'wpsc-cross-sales' );
-			echo '<div id="message" class="updated"><p>' . sprintf( $msg, $plugin, $wpec_version, $deactivate, $wpec_link ) . '</p></div>';
+		if ( current_user_can( 'install_plugins' ) && $pagenow == 'plugins.php' ) {
+			$plugin  = '<strong>' . __( 'Cross Sales', 'wpsc-cross-sales' ) . '</strong>';
+			$wpec_version = __( 'WP e-Commerce', 'wpsc-cross-sales' ) . ' ' . $wpec_cross_sales->required_wpsc_version . '+';
+			$wpec_link = ' <a href="http://wordpress.org/extend/plugins/wp-e-commerce/" target="_blank">' . __( 'WP e-Commerce', 'wpsc-cross-sales' ) . '</a>';
+			
+			$deactivate_plugin_file = plugin_basename( $wpec_cross_sales->plugin_file );
+			$deactivate_url = wp_nonce_url( admin_url( 'plugins.php?action=deactivate&amp;s&amp;plugin_status=all&amp;plugin=' . $deactivate_plugin_file ), 'deactivate-plugin_' . $deactivate_plugin_file );
+			$deactivate = '<a href="' . $deactivate_url . '">' . __( 'deactivate' ) . '</a>';
+			
+			if ( ! $wpec_cross_sales->wpec_is_installed() ) {
+				$msg = __( "The %s plugin requires %s. Please %s the plugin or install %s." , 'wpsc-cross-sales' );
+				echo '<div id="message" class="updated"><p>' . sprintf( $msg, $plugin, $wpec_version, $deactivate, $wpec_link ) . '</p></div>';
+			} elseif ( !$wpec_cross_sales->wpec_is_compatible() ) {
+				$msg = __( "The %s plugin is only compatible with %s. Please %s the plugin or upgrade %s.", 'wpsc-cross-sales' );
+				echo '<div id="message" class="updated"><p>' . sprintf( $msg, $plugin, $wpec_version, $deactivate, $wpec_link ) . '</p></div>';
+			}
 		}
 	}
 	

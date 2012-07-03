@@ -189,7 +189,7 @@ class WPEC_CrossSales {
 		global $wp_version;
 		if ( (float)$wp_version < $this->required_wp_version ) {
 			deactivate_plugins( plugin_basename( $this->plugin_file ) );
-			wp_die( __( 'Looks like you\'re running an older version of WordPress, you need to be running at least WordPress ' . $this->required_wp_version . ' to use the WP e-Commerce Cross Sales plugin.', 'wpsc-cross-sales' ), __( 'WP e-Commerce Cross Sales not compatible', 'wpsc-cross-sales' ), array( 'back_link' => true ) );
+			wp_die( sprintf( __( "Looks like you're running an older version of WordPress, you need to be running at least WordPress %s to use the WP e-Commerce Cross Sales plugin.", 'wpsc-cross-sales' ), $this->required_wp_version ), __( 'WP e-Commerce Cross Sales not compatible', 'wpsc-cross-sales' ), array( 'back_link' => true ) );
 			return;
 		}
 	}
