@@ -11,7 +11,6 @@ class WPEC_CrossSales_Admin {
 	 * Admin class constructor.
 	 */
 	function WPEC_CrossSales_Admin() {
-		// Hooks
 		add_action( 'admin_init', array ( $this, 'admin_init' ) );
 		add_action( 'admin_notices', array( $this, 'admin_notices' ) );
 	}
@@ -77,6 +76,7 @@ class WPEC_CrossSales_Admin {
 	 * Originally called 'wpsc_submit_alsobought_options' and located in wpsc-admin/ajax-and-init.php
 	 */
 	function submit_alsobought_options() {
+		
 		// Do or Die?
 		check_admin_referer( 'update-options', 'wpsc-update-options' );
 		

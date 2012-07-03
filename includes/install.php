@@ -22,12 +22,11 @@ class WPEC_CrossSales_Install {
 	 * by 2 spaces. The PRIMARY KEY must also be followed by 2 spaces.
 	 */
 	function upgrade_db_schema( $db_version ) {
-		
 		global $wpdb, $table_prefix;
 		
-		if ( ! empty($wpdb->charset) )
+		if ( ! empty( $wpdb->charset ) )
 			$charset_collate = "DEFAULT CHARACTER SET $wpdb->charset";
-		if ( ! empty($wpdb->collate) )
+		if ( ! empty( $wpdb->collate ) )
 			$charset_collate .= " COLLATE $wpdb->collate";
 		
 		// Payments Table
@@ -45,7 +44,6 @@ class WPEC_CrossSales_Install {
 		
 		// Update DB version info
 		update_option( 'wpsc_crosssales_db_version', $db_version );
-	
 	}
 	
 	/**
@@ -60,28 +58,27 @@ class WPEC_CrossSales_Install {
 		
 		// Also Bought Limit
 		$wpsc_also_bought_limit = get_option( 'wpsc_also_bought_limit' );
-		if ( $override || !is_numeric( $wpsc_also_bought_limit ) ) {
+		if ( $override || ! is_numeric( $wpsc_also_bought_limit ) ) {
 			update_option( 'wpsc_also_bought_limit', 3 );
 		}
 		
 		// Image Sizes
 		$wpsc_crosssale_image_width = get_option( 'wpsc_crosssale_image_width' );
-		if ( $override || !is_numeric( $wpsc_crosssale_image_width ) ) {
+		if ( $override || ! is_numeric( $wpsc_crosssale_image_width ) ) {
 			$product_image_width = get_option( 'product_image_width' );
-			if ( !is_numeric( $product_image_width ) ) {
+			if ( ! is_numeric( $product_image_width ) ) {
 				$product_image_width = get_option( 'thumbnail_size_w' );
 			}
 			update_option( 'wpsc_crosssale_image_width', $product_image_width );
 		}
 		$wpsc_crosssale_image_height = get_option( 'wpsc_crosssale_image_height' );
-		if ( $override || !is_numeric( $wpsc_crosssale_image_height ) ) {
+		if ( $override || ! is_numeric( $wpsc_crosssale_image_height ) ) {
 			$product_image_height = get_option( 'product_image_height' );
-			if ( !is_numeric( $product_image_height ) ) {
+			if ( ! is_numeric( $product_image_height ) ) {
 				$product_image_height = get_option( 'thumbnail_size_h' );
 			}
 			update_option( 'wpsc_crosssale_image_height', $product_image_height );
 		}
-		
 	}
 	
 }

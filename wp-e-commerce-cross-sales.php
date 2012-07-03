@@ -9,16 +9,13 @@ Version: 0.1
 
 class WPEC_CrossSales {
 	
-	/**
-	 * Properties
-	 */
-	var $db_version = 1;
-	var $required_wp_version = '3.0';
+	var $db_version            = 1;
+	var $required_wp_version   = '3.0';
 	var $required_wpsc_version = '3.9';
-	var $plugin_file = __FILE__;
+	var $plugin_file           = __FILE__;
+	var $db_table              = 'wpsc_also_bought';
+	var $product_id            = null;
 	var $admin;
-	var $db_table = 'wpsc_also_bought';
-	var $product_id = null;
 	
 	/**
 	 * Cross Sales class constructor.
@@ -31,7 +28,6 @@ class WPEC_CrossSales {
 		
 		// Hooks
 		add_action( 'init', 'wpsc_alsobought_init', 10 );
-		add_action( 'init', array ( $this, 'cross_sales_init' ), 10 );
 		add_action( 'plugins_loaded', array( $this, 'plugins_loaded' ) );
 		add_action( 'wpsc_submit_checkout', array( $this, 'wpsc_submit_checkout' ) );
 		
@@ -43,7 +39,6 @@ class WPEC_CrossSales {
 		
 		// Activation
 		register_activation_hook( $this->plugin_file, array( $this, 'register_activation_hook' ) );
-		
 	}
 	
 	/**
@@ -54,12 +49,6 @@ class WPEC_CrossSales {
 	function get_db_table() {
 		global $wpdb;
 		return $wpdb->prefix . $this->db_table;
-	}
-	
-	/**
-	 * Init
-	 */
-	function cross_sales_init() {
 	}
 	
 	/**
@@ -155,7 +144,7 @@ class WPEC_CrossSales {
 	 * @return array Multi-dimensional array of product IDs.
 	 */
 	function get_cart_cross_sale_data( $cart_contents ) {
-		$cross_sale_data = array( );
+		$cross_sale_data = array();
 		foreach ( $cart_contents as $outer_cart_item ) {
 			$cross_sale_data[$outer_cart_item->prodid] = array();
 			foreach ( $cart_contents as $inner_cart_item ) {
