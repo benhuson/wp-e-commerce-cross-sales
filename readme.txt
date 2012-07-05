@@ -3,7 +3,7 @@ Contributors: husobj
 Tags: e-commerce, wp-e-commerce, shop, cart, ecommerce, products, related
 Requires at least: 3.0
 Tested up to: 3.1
-Stable tag: 0.1
+Stable tag: 0.2
 License: GPLv2 or later
 
 This plugin displays cross sales in WP e-Commerce. It provides the same functionality as in earlier versions of WP e-Commerce plus a little bit more.
@@ -28,6 +28,12 @@ Upload the plugin and activate it.
 Simple.
 
 == Changelog ==
+
+= 0.2 =
+
+* Output using WP_Query().
+* Get also bought products instead of product variations with latest WPEC 3.9 dev.
+* Only show admin notice on plugins page if WPEC not installed or older version.
 
 = 0.1 =
 
