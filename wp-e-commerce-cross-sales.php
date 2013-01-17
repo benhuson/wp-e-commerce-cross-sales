@@ -197,7 +197,7 @@ class WPEC_CrossSales {
 	 * If WP e-Commerce is installed and compatible
 	 */
 	function wpec_is_compatible() {
-		if ( $this->wpec_is_installed() && version_compare( WPSC_VERSION, $this->required_wpsc_version, '>=' ) ) {
+		if ( $this->wpec_is_installed() && ( ! function_exists( 'wpsc_populate_also_bought_list' ) || ! wpsc_populate_also_bought_list() ) ) {
 			return true;
 		}
 		return false;
