@@ -53,7 +53,7 @@ class WPEC_CrossSales_Admin {
 				<p>
 					<span class="input_label">' . __( 'Cross Sales Limit', 'wpsc-cross-sales' ) . '</span>
 					<input type="text" name="wpsc_also_bought_limit" value="' . $wpsc_also_bought_limit . '" size="5" />
-					<span class="description">' . __( 'Maximumm number of cross sale products to display.', 'wpsc-cross-sales' ) . '</span>
+					<span class="description">' . __( 'Maximum number of cross sale products to display.', 'wpsc-cross-sales' ) . '</span>
 				</p>
 				<p>
 					<span class="input_label">' . __( 'Image Width', 'wpsc-cross-sales' ) . '</span>
@@ -66,7 +66,7 @@ class WPEC_CrossSales_Admin {
 				<div class="submit">
 					<input type="hidden" name="wpsc_admin_action" value="submit_options" />
 					' . wp_nonce_field( 'update-options', 'wpsc-update-options' ) . '
-					<input type="submit" class="button-primary" value="' . __( 'Update', 'wpsc-cross-sales' ) . ' »" name="form_submit" />
+					<input type="submit" class="button-primary" value="' . __( 'Save Changes', 'wpsc-cross-sales' ) . '" name="form_submit" />
 				</div>
 			</form>';
 	}
@@ -111,15 +111,15 @@ class WPEC_CrossSales_Admin {
 			$wpec_link = ' <a href="http://wordpress.org/extend/plugins/wp-e-commerce/" target="_blank">' . __( 'WP e-Commerce', 'wpsc-cross-sales' ) . '</a>';
 			
 			$deactivate_plugin_file = plugin_basename( $wpec_cross_sales->plugin_file );
-			$deactivate_url = wp_nonce_url( admin_url( 'plugins.php?action=deactivate&amp;s&amp;plugin_status=all&amp;plugin=' . $deactivate_plugin_file ), 'deactivate-plugin_' . $deactivate_plugin_file );
+			$deactivate_url = wp_nonce_url( admin_url( 'plugins.php?action=deactivate&plugin=' . $deactivate_plugin_file ), 'deactivate-plugin_' . $deactivate_plugin_file );
 			$deactivate = '<a href="' . $deactivate_url . '">' . __( 'deactivate' ) . '</a>';
 			
 			if ( ! $wpec_cross_sales->wpec_is_installed() ) {
 				$msg = __( "The %s plugin requires %s. Please %s the plugin or install %s." , 'wpsc-cross-sales' );
 				echo '<div id="message" class="updated"><p>' . sprintf( $msg, $plugin, $wpec_version, $deactivate, $wpec_link ) . '</p></div>';
 			} elseif ( !$wpec_cross_sales->wpec_is_compatible() ) {
-				$msg = __( "The %s plugin is only compatible with %s. Please %s the plugin or upgrade %s.", 'wpsc-cross-sales' );
-				echo '<div id="message" class="updated"><p>' . sprintf( $msg, $plugin, $wpec_version, $deactivate, $wpec_link ) . '</p></div>';
+				$msg = __( "The %s plugin is not compatible with the installed version of WP e-Commerce. Please %s the plugin or upgrade %s.", 'wpsc-cross-sales' );
+				echo '<div id="message" class="updated"><p>' . sprintf( $msg, $plugin, $deactivate, $wpec_link ) . '</p></div>';
 			}
 		}
 	}
