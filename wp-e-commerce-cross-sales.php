@@ -4,7 +4,7 @@
 Plugin Name: WP e-Commerce Cross Sales (Also Bought)
 Description: This plugin will add 'also bought' cross-sale functionality to WP e-Commerce 3.9+ (which must be installed and active for this plugin to do anything). This is the same functionality that existed as standard in previous versions of WP e-Commerce.
 Author: Ben Huson
-Version: 0.2
+Version: 0.3
 */
 
 class WPEC_CrossSales {
