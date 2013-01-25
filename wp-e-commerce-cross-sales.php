@@ -29,20 +29,17 @@ class WPEC_CrossSales {
 		// Language
 		load_plugin_textdomain( 'wpsc-cross-sales', false, dirname( $this->plugin_file ) . '/languages' );
 		
-		// Hooks
-		add_action( 'init', array( $this, 'disable_wpsc_populate_also_bought_list'), 0 );
 		add_action( 'plugins_loaded', array( $this, 'plugins_loaded' ) );
-		add_action( 'wpsc_submit_checkout', array( $this, 'wpsc_submit_checkout' ), 5 );
-		add_filter( '_wpsc_also_bought', array( $this, '_wpsc_also_bought' ), 10, 2 );
-		
-		add_filter( 'option_wpsc_also_bought_limit', array( $this, 'default_wpsc_also_bought_limit' ), 5 );
-		add_filter( 'option_wpsc_crosssale_image_width', array( $this, 'default_wpsc_crosssale_image_size' ), 5 );
-		add_filter( 'option_wpsc_crosssale_image_height', array( $this, 'default_wpsc_crosssale_image_size' ), 5 );
-		
-		// Admin
-		if ( is_admin() ) {
-			require_once( dirname( $this->plugin_file ) . '/includes/admin.php' );
-			$this->admin = new WPEC_CrossSales_Admin();
+		if ( $this->wpec_is_compatible() ) {
+			
+			// Hooks
+			add_action( 'init', array( $this, 'disable_wpsc_populate_also_bought_list'), 0 );
+			add_action( 'wpsc_submit_checkout', array( $this, 'wpsc_submit_checkout' ), 5 );
+			add_filter( '_wpsc_also_bought', array( $this, '_wpsc_also_bought' ), 10, 2 );
+			
+			add_filter( 'option_wpsc_also_bought_limit', array( $this, 'default_wpsc_also_bought_limit' ), 5 );
+			add_filter( 'option_wpsc_crosssale_image_width', array( $this, 'default_wpsc_crosssale_image_size' ), 5 );
+			add_filter( 'option_wpsc_crosssale_image_height', array( $this, 'default_wpsc_crosssale_image_size' ), 5 );
 		}
 		
 		// Activation
@@ -316,6 +313,12 @@ class WPEC_CrossSales {
 			$install->upgrade_db_schema( $this->db_version );
 			$install->set_default_options();
 		}
+		
+		// Admin
+		if ( is_admin() ) {
+			require_once( dirname( $this->plugin_file ) . '/includes/admin.php' );
+			$this->admin = new WPEC_CrossSales_Admin();
+		}
 	}
 	
 	/**
@@ -348,7 +351,7 @@ class WPEC_CrossSales {
 	 * If WP e-Commerce is installed and compatible
 	 */
 	function wpec_is_compatible() {
-		if ( $this->wpec_is_installed() && ( ! function_exists( 'wpsc_populate_also_bought_list' ) || ! wpsc_populate_also_bought_list() ) ) {
+		if ( $this->wpec_is_installed() && version_compare( WPSC_VERSION, $this->required_wpsc_version, '>=' ) && ( ! function_exists( 'wpsc_populate_also_bought_list' ) || ! wpsc_populate_also_bought_list() ) ) {
 			return true;
 		}
 		return false;

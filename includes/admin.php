@@ -11,7 +11,11 @@ class WPEC_CrossSales_Admin {
 	 * Admin class constructor.
 	 */
 	function WPEC_CrossSales_Admin() {
-		add_action( 'admin_init', array ( $this, 'admin_init' ) );
+		global $wpec_cross_sales;
+		
+		if ( $wpec_cross_sales->wpec_is_compatible() ) {
+			add_action( 'admin_init', array ( $this, 'admin_init' ) );
+		}
 		add_action( 'admin_notices', array( $this, 'admin_notices' ) );
 	}
 	
